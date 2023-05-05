@@ -24,30 +24,36 @@ public class DocumentController {
         this.commentRepository = commentRepository;
     }
 
+    // Upload a document
     @PostMapping("/upload")
     public Document uploadDocument(@RequestParam("file") MultipartFile file) throws IOException {
         // Process and store the uploaded file (PDF) using PDFBox
         String filename = file.getOriginalFilename();
+
         // Save the document to the database
         Document document = new Document();
         document.setFilename(filename);
         return documentRepository.save(document);
     }
 
+    // Get all documents
     @GetMapping("/getAll")
     public List<Document> getAllDocuments() {
         return documentRepository.findAll();
     }
 
+    // Get a document by ID
     @GetMapping("/{id}")
     public Optional<Document> getDocumentById(@PathVariable("id") Long id) {
         return documentRepository.findById(id);
     }
 
+    // Update a document by ID
     @PutMapping("/{id}")
     public Document updateDocument(@PathVariable("id") Long id, @RequestParam("file") MultipartFile file) throws IOException {
         // Process and store the uploaded file (PDF) using PDFBox
         String filename = file.getOriginalFilename();
+
         // Get the document by ID
         Optional<Document> optionalDocument = documentRepository.findById(id);
         if (optionalDocument.isPresent()) {
@@ -58,6 +64,8 @@ public class DocumentController {
             throw new RuntimeException("Document not found");
         }
     }
+
+    // Delete a document by ID
     @DeleteMapping("/{id}")
     public void deleteDocument(@PathVariable("id") Long id) {
         documentRepository.deleteById(id);
