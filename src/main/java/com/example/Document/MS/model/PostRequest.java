@@ -12,6 +12,10 @@ public class PostRequest {
         this.content = content;
     }
 
+    public PostRequest() {
+
+    }
+
     public Long getDocumentId() {
         return documentId;
     }

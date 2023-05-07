@@ -3,6 +3,7 @@ package com.example.Document.MS.controller;
 import com.example.Document.MS.model.Document;
 import com.example.Document.MS.repo.CommentRepository;
 import com.example.Document.MS.repo.DocumentRepository;
+import com.example.Document.MS.service.DocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,58 +19,43 @@ public class DocumentController {
     private final DocumentRepository documentRepository;
     @Autowired
     private final CommentRepository commentRepository;
+    @Autowired
+    private final DocumentService documentService;
 
-    public DocumentController(DocumentRepository documentRepository, CommentRepository commentRepository) {
+    public DocumentController(DocumentRepository documentRepository, CommentRepository commentRepository, DocumentService documentService) {
         this.documentRepository = documentRepository;
         this.commentRepository = commentRepository;
+        this.documentService = documentService;
     }
 
-    // Upload a document
     @PostMapping("/upload")
     public Document uploadDocument(@RequestParam("file") MultipartFile file) throws IOException {
-        // Process and store the uploaded file (PDF) using PDFBox
-        String filename = file.getOriginalFilename();
-
-        // Save the document to the database
-        Document document = new Document();
-        document.setFilename(filename);
-        return documentRepository.save(document);
+        return documentService.uploadDocument(file);
     }
+
 
     // Get all documents
     @GetMapping("/getAll")
     public List<Document> getAllDocuments() {
-        return documentRepository.findAll();
+        return documentService.getAllDocuments();
     }
 
-    // Get a document by ID
     @GetMapping("/{id}")
     public Optional<Document> getDocumentById(@PathVariable("id") Long id) {
-        return documentRepository.findById(id);
+        return documentService.getDocumentById(id);
     }
 
     // Update a document by ID
     @PutMapping("/{id}")
     public Document updateDocument(@PathVariable("id") Long id, @RequestParam("file") MultipartFile file) throws IOException {
-        // Process and store the uploaded file (PDF) using PDFBox
-        String filename = file.getOriginalFilename();
-
-        // Get the document by ID
-        Optional<Document> optionalDocument = documentRepository.findById(id);
-        if (optionalDocument.isPresent()) {
-            Document document = optionalDocument.get();
-            document.setFilename(filename);
-            return documentRepository.save(document);
-        } else {
-            throw new RuntimeException("Document not found");
-        }
+        return documentService.updateDocument(id, file);
     }
 
     // Delete a document by ID
     @DeleteMapping("/{id}")
     public void deleteDocument(@PathVariable("id") Long id) {
-        documentRepository.deleteById(id);
+        documentService.deleteDocument(id);
     }
 
-    // Add additional methods as needed
+
 }
